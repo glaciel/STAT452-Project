@@ -1,0 +1,108 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+### Load packages
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+### Data
+
+```{r}
+setwd("D:\\3rd year\\STAT452")
+data <- read.csv("master.csv", header = TRUE)
+data
+```
+
+
+### Manipulate data
+
+Global suicide rates between genders over year
+
+```{r}
+suicide_rates_gender_year <- data %>%
+  group_by(year, sex) %>%
+  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
+```
+
+Line plot
+
+```{r}
+ggplot(data=suicide_rates_gender_year, aes(x=year, y=suicides.100k.pop, group=sex)) +
+  geom_line(aes(color=sex)) +
+  geom_point(aes(color=sex))
+```
+
+Global suicide rates between ages over year
+
+```{r}
+suicide_rates_ages_year <- data %>%
+  group_by(year, age) %>%
+  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
+```
+
+Line plot
+
+```{r}
+ggplot(data=suicide_rates_ages_year, aes(x=year, y=suicides.100k.pop, group=age)) +
+  geom_line(aes(color=age)) +
+  geom_point(aes(color=age))
+```
+
+Global suicide rates between generation over year
+
+```{r}
+suicide_rates_generation_year <- data %>%
+  group_by(year, generation) %>%
+  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
+```
+
+Line plot
+
+```{r}
+ggplot(data=suicide_rates_generation_year, aes(x=year, y=suicides.100k.pop, group=generation)) +
+  geom_line(aes(color=generation)) +
+  geom_point(aes(color=generation))
+```
+
+Suicide rates between country over year
+
+```{r}
+suicide_rates_country_year <- data %>%
+  group_by(country, year) %>%
+  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population), gdp_per_capita=mean(gdp_per_capita....))
+```
+
+Find top 5 country that have highest total suicide rates
+
+```{r}
+suicide_rates_country_year_top5 <- suicide_rates_country_year %>%
+  group_by(country) %>%
+  summarise(total = sum(suicides.100k.pop)) %>%
+  arrange(desc(total)) %>%
+  slice(1:5)
+```
+
+
+Line plot
+
+```{r}
+ggplot(data=filter(suicide_rates_country_year, country %in% suicide_rates_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
+  geom_line(aes(color=country)) +
+  geom_point(aes(color=country))
+```
+
+Relation between suicide rates and gdp per capita by year
+
+```{r}
+ggplot(data=filter(suicide_rates_country_year, year == 2010), aes(x=gdp_per_capita, y=suicides.100k.pop, group=year)) +
+  geom_point(aes(color=year))
+```
+
+
