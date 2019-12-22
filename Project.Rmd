@@ -21,7 +21,7 @@ data
 ```
 
 
-### Manipulate data
+### Exploratory Data Analysis
 
 Global suicide rates between genders over year
 
@@ -29,12 +29,20 @@ Global suicide rates between genders over year
 suicide_rates_gender_year <- data %>%
   group_by(year, sex) %>%
   summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
+
+suicide_gender_year <- data %>%
+  group_by(year, sex) %>%
+  summarise(suicides_no=sum(suicides_no))
 ```
 
 Line plot
 
 ```{r}
 ggplot(data=suicide_rates_gender_year, aes(x=year, y=suicides.100k.pop, group=sex)) +
+  geom_line(aes(color=sex)) +
+  geom_point(aes(color=sex))
+
+ggplot(data=suicide_gender_year, aes(x=year, y=suicides_no, group=sex)) +
   geom_line(aes(color=sex)) +
   geom_point(aes(color=sex))
 ```
@@ -45,12 +53,20 @@ Global suicide rates between ages over year
 suicide_rates_ages_year <- data %>%
   group_by(year, age) %>%
   summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
+
+suicide_ages_year <- data %>%
+  group_by(year, age) %>%
+  summarise(suicides_no=sum(suicides_no)*100000)
 ```
 
 Line plot
 
 ```{r}
 ggplot(data=suicide_rates_ages_year, aes(x=year, y=suicides.100k.pop, group=age)) +
+  geom_line(aes(color=age)) +
+  geom_point(aes(color=age))
+
+ggplot(data=suicide_ages_year, aes(x=year, y=suicides_no, group=age)) +
   geom_line(aes(color=age)) +
   geom_point(aes(color=age))
 ```
@@ -61,6 +77,10 @@ Global suicide rates between generation over year
 suicide_rates_generation_year <- data %>%
   group_by(year, generation) %>%
   summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
+
+suicide_generation_year <- data %>%
+  group_by(year, generation) %>%
+  summarise(suicides_no=sum(suicides_no))
 ```
 
 Line plot
@@ -69,7 +89,35 @@ Line plot
 ggplot(data=suicide_rates_generation_year, aes(x=year, y=suicides.100k.pop, group=generation)) +
   geom_line(aes(color=generation)) +
   geom_point(aes(color=generation))
+
+ggplot(data=suicide_generation_year, aes(x=year, y=suicides_no, group=generation)) +
+  geom_line(aes(color=generation)) +
+  geom_point(aes(color=generation))
 ```
+
+Global suicide rates between region over year
+
+```{r}
+suicide_rates_region_year <- data %>%
+  group_by(year, region) %>%
+  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
+
+suicide_region_year <- data %>%
+  group_by(year, region) %>%
+  summarise(suicides_no=sum(suicides_no))
+```
+
+Line plot
+```{r}
+ggplot(data=suicide_rates_region_year, aes(x=year, y=suicides.100k.pop, group=region)) +
+  geom_line(aes(color=region)) +
+  geom_point(aes(color=region))
+
+ggplot(data=suicide_region_year, aes(x=year, y=suicides_no, group=region)) +
+  geom_line(aes(color=region)) +
+  geom_point(aes(color=region))
+```
+
 
 Suicide rates between country over year
 
@@ -104,5 +152,6 @@ Relation between suicide rates and gdp per capita by year
 ggplot(data=filter(suicide_rates_country_year, year == 2010), aes(x=gdp_per_capita, y=suicides.100k.pop, group=year)) +
   geom_point(aes(color=year))
 ```
+
 
 
