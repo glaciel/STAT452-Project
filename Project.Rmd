@@ -5,44 +5,131 @@ output:
     df_print: paged
 ---
 
-### Load packages
+## Load packages
 
 ```{r}
 library(dplyr)
 library(ggplot2)
 ```
 
-### Data
+## Data
 
 ```{r}
 setwd("D:\\3rd year\\STAT452")
 data <- read.csv("master.csv", header = TRUE)
-data
 ```
 
 
-### Exploratory Data Analysis
+## Exploratory Data Analysis
+
+## Categorical variable
+
+### Sex
+
+```{r}
+sex_data <- data %>%
+  group_by(sex) %>%
+  summarise(count = n()) %>%
+  mutate(p=count/sum(count))
+sex_data
+
+ggplot(data=sex_data, aes(x="", y=count, fill=sex)) +
+ geom_bar(stat='identity') +
+  coord_polar("y") +
+  theme_void()
+```
+
+### Age
+
+```{r}
+age_data <- data %>%
+  group_by(age) %>%
+  summarise(count = n()) %>%
+  mutate(p=count/sum(count))
+age_data
+
+ggplot(data=age_data, aes(x="", y=count, fill=age)) +
+ geom_bar(stat='identity') +
+  coord_polar("y") +
+  theme_void()
+```
+
+### Generation
+
+```{r}
+generation_data <- data %>%
+  group_by(generation) %>%
+  summarise(count = n()) %>%
+  mutate(p=count/sum(count))
+generation_data
+
+ggplot(data=generation_data, aes(x="", y=count, fill=generation)) +
+ geom_bar(stat='identity') +
+  coord_polar("y") +
+  theme_void()
+```
+
+### Region
+
+```{r}
+region_data <- data %>%
+  group_by(region) %>%
+  summarise(count = n()) %>%
+  mutate(p=count/sum(count))
+region_data
+
+ggplot(data=region_data, aes(x="", y=count, fill=region)) +
+ geom_bar(stat='identity') +
+  coord_polar("y") +
+  theme_void()
+```
+
+### Year
+
+```{r}
+year_data <- data %>%
+  group_by(year) %>%
+  summarise(count = n())
+year_data
+
+ggplot(data=year_data, aes(x=year, y=count)) +
+ geom_bar(stat='identity')
+```
+
+Filter out year 2016 due to lack of data
+
+```{r}
+data <- data %>%
+  filter(year < 2016)
+```
+
+## Numerical variable
+
+### Number of suicide, population, suicide rates over year
 
 Global suicide rates between genders over year
 
 ```{r}
-suicide_rates_gender_year <- data %>%
-  group_by(year, sex) %>%
-  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
-
 suicide_gender_year <- data %>%
   group_by(year, sex) %>%
-  summarise(suicides_no=sum(suicides_no))
+  summarise(suicides.100k.pop=mean(suicides_no)*100000 / mean(population),
+            suicides_no=mean(suicides_no),
+            population=mean(population))
+suicide_gender_year
 ```
 
 Line plot
 
 ```{r}
-ggplot(data=suicide_rates_gender_year, aes(x=year, y=suicides.100k.pop, group=sex)) +
+ggplot(data=suicide_gender_year, aes(x=year, y=suicides.100k.pop, group=sex)) +
   geom_line(aes(color=sex)) +
   geom_point(aes(color=sex))
 
 ggplot(data=suicide_gender_year, aes(x=year, y=suicides_no, group=sex)) +
+  geom_line(aes(color=sex)) +
+  geom_point(aes(color=sex))
+
+ggplot(data=suicide_gender_year, aes(x=year, y=population, group=sex)) +
   geom_line(aes(color=sex)) +
   geom_point(aes(color=sex))
 ```
@@ -50,23 +137,26 @@ ggplot(data=suicide_gender_year, aes(x=year, y=suicides_no, group=sex)) +
 Global suicide rates between ages over year
 
 ```{r}
-suicide_rates_ages_year <- data %>%
+suicide_age_year <- data %>%
   group_by(year, age) %>%
-  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
-
-suicide_ages_year <- data %>%
-  group_by(year, age) %>%
-  summarise(suicides_no=sum(suicides_no)*100000)
+  summarise(suicides.100k.pop=mean(suicides_no)*100000 / mean(population),
+            suicides_no=mean(suicides_no),
+            population=mean(population))
+suicide_age_year
 ```
 
 Line plot
 
 ```{r}
-ggplot(data=suicide_rates_ages_year, aes(x=year, y=suicides.100k.pop, group=age)) +
+ggplot(data=suicide_age_year, aes(x=year, y=suicides.100k.pop, group=age)) +
   geom_line(aes(color=age)) +
   geom_point(aes(color=age))
 
-ggplot(data=suicide_ages_year, aes(x=year, y=suicides_no, group=age)) +
+ggplot(data=suicide_age_year, aes(x=year, y=suicides_no, group=age)) +
+  geom_line(aes(color=age)) +
+  geom_point(aes(color=age))
+
+ggplot(data=suicide_age_year, aes(x=year, y=population, group=age)) +
   geom_line(aes(color=age)) +
   geom_point(aes(color=age))
 ```
@@ -74,23 +164,26 @@ ggplot(data=suicide_ages_year, aes(x=year, y=suicides_no, group=age)) +
 Global suicide rates between generation over year
 
 ```{r}
-suicide_rates_generation_year <- data %>%
-  group_by(year, generation) %>%
-  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
-
 suicide_generation_year <- data %>%
   group_by(year, generation) %>%
-  summarise(suicides_no=sum(suicides_no))
+  summarise(suicides.100k.pop=mean(suicides_no)*100000 / mean(population),
+            suicides_no=mean(suicides_no),
+            population=mean(population))
+suicide_generation_year
 ```
 
 Line plot
 
 ```{r}
-ggplot(data=suicide_rates_generation_year, aes(x=year, y=suicides.100k.pop, group=generation)) +
+ggplot(data=suicide_generation_year, aes(x=year, y=suicides.100k.pop, group=generation)) +
   geom_line(aes(color=generation)) +
   geom_point(aes(color=generation))
 
 ggplot(data=suicide_generation_year, aes(x=year, y=suicides_no, group=generation)) +
+  geom_line(aes(color=generation)) +
+  geom_point(aes(color=generation))
+
+ggplot(data=suicide_generation_year, aes(x=year, y=population, group=generation)) +
   geom_line(aes(color=generation)) +
   geom_point(aes(color=generation))
 ```
@@ -98,60 +191,137 @@ ggplot(data=suicide_generation_year, aes(x=year, y=suicides_no, group=generation
 Global suicide rates between region over year
 
 ```{r}
-suicide_rates_region_year <- data %>%
-  group_by(year, region) %>%
-  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population))
-
 suicide_region_year <- data %>%
   group_by(year, region) %>%
-  summarise(suicides_no=sum(suicides_no))
+  summarise(suicides.100k.pop=mean(suicides_no)*100000 / mean(population),
+            suicides_no=mean(suicides_no),
+            population=mean(population))
+suicide_region_year
 ```
 
 Line plot
+
 ```{r}
-ggplot(data=suicide_rates_region_year, aes(x=year, y=suicides.100k.pop, group=region)) +
+ggplot(data=suicide_region_year, aes(x=year, y=suicides.100k.pop, group=region)) +
   geom_line(aes(color=region)) +
   geom_point(aes(color=region))
 
 ggplot(data=suicide_region_year, aes(x=year, y=suicides_no, group=region)) +
   geom_line(aes(color=region)) +
   geom_point(aes(color=region))
-```
 
+ggplot(data=suicide_region_year, aes(x=year, y=population, group=region)) +
+  geom_line(aes(color=region)) +
+  geom_point(aes(color=region))
+```
 
 Suicide rates between country over year
 
 ```{r}
-suicide_rates_country_year <- data %>%
-  group_by(country, year) %>%
-  summarise(suicides.100k.pop=sum(suicides_no)*100000 / sum(population), gdp_per_capita=mean(gdp_per_capita....))
+suicide_country_year <- data %>%
+  group_by(year, country) %>%
+  summarise(suicides.100k.pop=mean(suicides_no)*100000 / mean(population),
+            suicides_no=mean(suicides_no),
+            population=mean(population),
+            gdp_per_capita=mean(gdp_per_capita....))
+suicide_country_year
 ```
 
-Find top 5 country that have highest total suicide rates
+Find top 5 country that have highest average suicide rates
 
 ```{r}
-suicide_rates_country_year_top5 <- suicide_rates_country_year %>%
+suicide_rates_country_year_top5 <- suicide_country_year %>%
   group_by(country) %>%
-  summarise(total = sum(suicides.100k.pop)) %>%
-  arrange(desc(total)) %>%
+  summarise(avg = mean(suicides_no)*100000/mean(population)) %>%
+  arrange(desc(avg)) %>%
   slice(1:5)
+suicide_rates_country_year_top5
 ```
-
 
 Line plot
 
 ```{r}
-ggplot(data=filter(suicide_rates_country_year, country %in% suicide_rates_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
+ggplot(data=filter(suicide_country_year, country %in% suicide_rates_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
   geom_line(aes(color=country)) +
   geom_point(aes(color=country))
 ```
 
-Relation between suicide rates and gdp per capita by year
+Find top 5 country that have highest average number of suicides
 
 ```{r}
-ggplot(data=filter(suicide_rates_country_year, year == 2010), aes(x=gdp_per_capita, y=suicides.100k.pop, group=year)) +
-  geom_point(aes(color=year))
+suicide_no_country_year_top5 <- suicide_country_year %>%
+  group_by(country) %>%
+  summarise(avg = mean(suicides_no)) %>%
+  arrange(desc(avg)) %>%
+  slice(1:5)
+suicide_no_country_year_top5
 ```
 
+Line plot
+
+```{r}
+ggplot(data=filter(suicide_country_year, country %in% suicide_no_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
+  geom_line(aes(color=country)) +
+  geom_point(aes(color=country))
+```
+
+Find top 5 country that have highest average population
+
+```{r}
+suicide_population_country_year_top5 <- suicide_country_year %>%
+  group_by(country) %>%
+  summarise(avg = mean(population)) %>%
+  arrange(desc(avg)) %>%
+  slice(1:5)
+suicide_population_country_year_top5
+```
+
+Line plot
+
+```{r}
+ggplot(data=filter(suicide_country_year, country %in% suicide_population_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
+  geom_line(aes(color=country)) +
+  geom_point(aes(color=country))
+```
+
+Find top 5 country that have highest average gdp per capita
+
+```{r}
+suicide_gdp_country_year_top5 <- suicide_country_year %>%
+  group_by(country) %>%
+  summarise(avg = mean(gdp_per_capita)) %>%
+  arrange(desc(avg)) %>%
+  slice(1:5)
+suicide_gdp_country_year_top5
+```
+
+Line plot
+
+```{r}
+ggplot(data=filter(suicide_country_year, country %in% suicide_gdp_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
+  geom_line(aes(color=country)) +
+  geom_point(aes(color=country))
+```
+
+Relation between suicide rates and gdp per capita
+
+```{r}
+ggplot(data=data, aes(x=log10(gdp_per_capita....), y=suicides.100k.pop)) +
+  geom_point()
+```
+
+Relation between suicide rates and hdi for year
+
+```{r}
+ggplot(data=filter(data, !is.na(HDI.for.year)), aes(x=HDI.for.year, y=suicides.100k.pop)) +
+  geom_point()
+```
+
+
+```{r}
+data[is.na(data)] <- 0
+model <- lm(data$suicides.100k.pop ~ data$age + data$year + data$sex + data$population + data$gdp_per_capita + data$region + data$generation + data$HDI.for.year)
+summary(model)
+```
 
 
