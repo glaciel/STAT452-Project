@@ -1,9 +1,13 @@
 ---
-title: "R Notebook"
+title: "STAT452 - Project"
 output:
   html_document:
     df_print: paged
 ---
+
+### Nguyen Hoang Tan - 1751126
+### Nguyen Truong Vinh Thuyen -
+### Nguyen Hoang Tuan Duy - 
 
 ## Load packages
 
@@ -14,17 +18,21 @@ library(ggplot2)
 
 ## Data
 
+This compiled dataset pulled from four other datasets linked by time and place, and was built to find signals correlated to increased suicide rates among different cohorts globally, across the socio-economic spectrum.
+
 ```{r}
 setwd("D:\\3rd year\\STAT452")
 data <- read.csv("master.csv", header = TRUE)
+data
+
+summary(data)
 ```
 
+## A. Exploratory Data Analysis
 
-## Exploratory Data Analysis
+## I. Categorical variable
 
-## Categorical variable
-
-### Sex
+### 1. Sex
 
 ```{r}
 sex_data <- data %>%
@@ -39,7 +47,9 @@ ggplot(data=sex_data, aes(x="", y=count, fill=sex)) +
   theme_void()
 ```
 
-### Age
+Data shows that both male and female data are collected for each case
+
+### 2. Age
 
 ```{r}
 age_data <- data %>%
@@ -54,7 +64,9 @@ ggplot(data=age_data, aes(x="", y=count, fill=age)) +
   theme_void()
 ```
 
-### Generation
+Data shows that they divided age into 6 groups and there are 32 cases that 5 - 14 years old group's data cannot be collected
+
+### 3. Generation
 
 ```{r}
 generation_data <- data %>%
@@ -69,7 +81,9 @@ ggplot(data=generation_data, aes(x="", y=count, fill=generation)) +
   theme_void()
 ```
 
-### Region
+Data shows that G.I Generation and Generation Z have least data due to they are the oldest and youngest generation repsectively. Other generations have pretty same number of samples.
+
+### 4. Region
 
 ```{r}
 region_data <- data %>%
@@ -84,7 +98,9 @@ ggplot(data=region_data, aes(x="", y=count, fill=region)) +
   theme_void()
 ```
 
-### Year
+Data shows that it was mostly collected from 3 regions: Europe, South/Latin America and Asia & Pacific. Africa, Arab States and North America have small number of samples so their results may not reflect real state.
+
+### 5. Year
 
 ```{r}
 year_data <- data %>%
@@ -96,18 +112,33 @@ ggplot(data=year_data, aes(x=year, y=count)) +
  geom_bar(stat='identity')
 ```
 
-Filter out year 2016 due to lack of data
+Data shows that for each year we got around 600-1000 samples except year 2016 had only 160 samples so we will filter out year 2016 for better result
 
 ```{r}
 data <- data %>%
   filter(year < 2016)
 ```
 
-## Numerical variable
+## II. Numerical variable
 
-### Number of suicide, population, suicide rates over year
+### 1. Distribution of population, number of suicides and suicide rates globally all the time
 
-Global suicide rates between genders over year
+```{r}
+ggplot(data=data, aes(x=population)) +
+  geom_histogram(binwidth = 100000)
+
+ggplot(data=data, aes(x=suicides_no)) +
+  geom_histogram(binwidth = 100)
+
+ggplot(data=data, aes(x=suicides.100k.pop)) +
+  geom_histogram(binwidth = 5)
+```
+
+We can see these three distributions are unimodal and very right skewed. It's pretty easy to understand since it always have some country have population or number of suicides vastly difference from others due to their area, culture or goverment policy. 
+
+### 2. Number of suicide, population, suicide rates over year globally
+
+### a. Between gender
 
 ```{r}
 suicide_gender_year <- data %>%
@@ -117,8 +148,6 @@ suicide_gender_year <- data %>%
             population=mean(population))
 suicide_gender_year
 ```
-
-Line plot
 
 ```{r}
 ggplot(data=suicide_gender_year, aes(x=year, y=suicides.100k.pop, group=sex)) +
@@ -134,7 +163,9 @@ ggplot(data=suicide_gender_year, aes(x=year, y=population, group=sex)) +
   geom_point(aes(color=sex))
 ```
 
-Global suicide rates between ages over year
+We can see that the suicide rates of male is significantly higher than that number of female. It looks like the suicide rates for both gender are decreasing over year. However, it was not due to the linear decreasing of suicide number but because of the exponential increasing of population. 
+
+### b. Between ages
 
 ```{r}
 suicide_age_year <- data %>%
@@ -144,8 +175,6 @@ suicide_age_year <- data %>%
             population=mean(population))
 suicide_age_year
 ```
-
-Line plot
 
 ```{r}
 ggplot(data=suicide_age_year, aes(x=year, y=suicides.100k.pop, group=age)) +
@@ -161,7 +190,9 @@ ggplot(data=suicide_age_year, aes(x=year, y=population, group=age)) +
   geom_point(aes(color=age))
 ```
 
-Global suicide rates between generation over year
+We can see that the suicide rates are increased as age increased since 75+ years old group had highest suicide rates and 5-14 years old had lowest suicide rates (the number for this group also very small). And we also oberserve the phenomenone same as grouping by gender, the suicide rates over year are decreased but mostly because the population growing so fast.
+
+### c. Between generations
 
 ```{r}
 suicide_generation_year <- data %>%
@@ -171,8 +202,6 @@ suicide_generation_year <- data %>%
             population=mean(population))
 suicide_generation_year
 ```
-
-Line plot
 
 ```{r}
 ggplot(data=suicide_generation_year, aes(x=year, y=suicides.100k.pop, group=generation)) +
@@ -188,7 +217,9 @@ ggplot(data=suicide_generation_year, aes(x=year, y=population, group=generation)
   geom_point(aes(color=generation))
 ```
 
-Global suicide rates between region over year
+The plots are hard to intepret since the data looks like discontinous. We can see that they had some large gaps between some years and we not sure that it is because the nature of data or because of lacking of data. Overall, recent generation had higher suicide rates than older generation.
+
+### d. Between regions
 
 ```{r}
 suicide_region_year <- data %>%
@@ -198,8 +229,6 @@ suicide_region_year <- data %>%
             population=mean(population))
 suicide_region_year
 ```
-
-Line plot
 
 ```{r}
 ggplot(data=suicide_region_year, aes(x=year, y=suicides.100k.pop, group=region)) +
@@ -215,7 +244,9 @@ ggplot(data=suicide_region_year, aes(x=year, y=population, group=region)) +
   geom_point(aes(color=region))
 ```
 
-Suicide rates between country over year
+Top 3 regions that have highest suicide rates through times are Europe, Asia % Pacific, and North America. North America population and number of suicides are significantly higher than other regions.
+
+### e. Between country
 
 ```{r}
 suicide_country_year <- data %>%
@@ -238,8 +269,6 @@ suicide_rates_country_year_top5 <- suicide_country_year %>%
 suicide_rates_country_year_top5
 ```
 
-Line plot
-
 ```{r}
 ggplot(data=filter(suicide_country_year, country %in% suicide_rates_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
   geom_line(aes(color=country)) +
@@ -256,8 +285,6 @@ suicide_no_country_year_top5 <- suicide_country_year %>%
   slice(1:5)
 suicide_no_country_year_top5
 ```
-
-Line plot
 
 ```{r}
 ggplot(data=filter(suicide_country_year, country %in% suicide_no_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
@@ -276,8 +303,6 @@ suicide_population_country_year_top5 <- suicide_country_year %>%
 suicide_population_country_year_top5
 ```
 
-Line plot
-
 ```{r}
 ggplot(data=filter(suicide_country_year, country %in% suicide_population_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
   geom_line(aes(color=country)) +
@@ -295,33 +320,122 @@ suicide_gdp_country_year_top5 <- suicide_country_year %>%
 suicide_gdp_country_year_top5
 ```
 
-Line plot
-
 ```{r}
 ggplot(data=filter(suicide_country_year, country %in% suicide_gdp_country_year_top5$country), aes(x=year, y=suicides.100k.pop, group=country)) +
   geom_line(aes(color=country)) +
   geom_point(aes(color=country))
 ```
 
-Relation between suicide rates and gdp per capita
+All top 5 country that have highest average suicide rates are came from Europe. Russian Federation, United States, and Japan have number of suicides significantly higher than others and they are also in top 5 of country that have highest population. However, Brazil and Mexico also in this list but they have very low suicide rates over year. And the fascinating thing is top 5 of country that have highest gdp per capita have suicide rates smaller than average (below 20 suicides / 100k people)
+
+## III. Correlation between variables
+
+### 1. Relation between suicide rates and gdp per capita
 
 ```{r}
 ggplot(data=data, aes(x=log10(gdp_per_capita....), y=suicides.100k.pop)) +
   geom_point()
 ```
 
-Relation between suicide rates and hdi for year
+### 2. Relation between suicide rates and hdi for year
 
 ```{r}
 ggplot(data=filter(data, !is.na(HDI.for.year)), aes(x=HDI.for.year, y=suicides.100k.pop)) +
   geom_point()
 ```
 
+It looks like that there are no linear correlation between suicide rates and two other numerical variables.
+
+## B. Statistical Inference
+
+## 1. Unconditional model
+
+Data table contains Region, Year, Suicides_Rate, and GDP_per_capita
 
 ```{r}
-data[is.na(data)] <- 0
-model <- lm(data$suicides.100k.pop ~ data$age + data$year + data$sex + data$population + data$gdp_per_capita + data$region + data$generation + data$HDI.for.year)
-summary(model)
+suicide_gdp_year <- data %>%
+	group_by(region,year)  %>% summarise(suicides.100k.pop=mean(suicides_no)*100000 / mean(population), gdp_per_capita=mean(gdp_per_capita....))
+suicide_gdp_year
+summary(suicide_gdp_year)
 ```
 
+### a. Linear model 1: Suicides_rate = B1 +  B2*year 
 
+```{r}
+unconditionalmodel1 <- lm(suicide_gdp_year$suicides.100k.pop ~ suicide_gdp_year$year) 
+
+summary(unconditionalmodel1)
+
+plot(suicide_gdp_year$year, suicide_gdp_year$suicides.100k.pop, col = "green")
+abline(unconditionalmodel1, col = "red")
+```
+
+### b. Linear model 2: Suicides_rate = B1 + B2*GDP_per_capita
+
+```{r}
+unconditionalmodel2 <- lm(suicide_gdp_year$suicides.100k.pop ~ suicide_gdp_year$gdp_per_capita) 
+
+summary(unconditionalmodel2)
+
+plot(suicide_gdp_year$gdp_per_capita,suicide_gdp_year$suicides.100k.pop, col = "blue")
+
+abline(unconditionalmodel2, col = "red")
+```
+
+## 2. Multiple model:
+
+```{r}
+V1 = suicide_gdp_year$region
+V2 = suicide_gdp_year$year
+V3 = suicide_gdp_year$gdp_per_capita
+unconditionalmodel3 <- lm(suicide_gdp_year$suicides.100k.pop ~ V1 + V2 + V3) 
+summary(unconditionalmodel3)
+```
+
+T-test: 
+H0: B3 = 0 
+
+H1: B3 != 0 
+
+alpha = 0.5 
+
+```{r}
+t_unconditionmalmodel3 <- qt(1 - 0.5/2, df = 27821 - 4)
+t_unconditionmalmodel3
+
+if (3.959 >= t_unconditionmalmodel3){
+	print("reject H0")
+	print("So, B3 can't be zero")
+} else{
+       	print("Accept H0")
+	print("So B3 is zero")
+}
+```
+
+### Confidence interval
+
+90% confidence interval for model 3
+
+```{r}
+confint(unconditionalmodel3, level = 0.90)
+```
+
+95% confidence interval for model 3
+
+```{r}
+confint(unconditionalmodel3, level = 0.95)
+```
+
+### Predict
+
+Predict suicide_rate in Europe in 2005 where GDP/capita equal to 1000
+
+```{r}
+predict(unconditionalmodel3, data.frame( V1 = "Europe", V2 = 2005, V3 = 1000))
+```
+
+## Analysis of Variance Table
+
+```{r}
+anova(unconditionalmodel1, unconditionalmodel2, unconditionalmodel3)
+```
